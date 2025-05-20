@@ -1,4 +1,3 @@
-from server import app
 from server import create_app
 from routes import auth, companies, companies_admin, users_admin
 
