@@ -1,6 +1,6 @@
-from flask import render_template
+from flask import redirect
+from server import app
 
-def register_home(app):
-    @app.route('/')
-    def index():
-        return render_template('auth/login.html')
+@app.route('/')
+def index():
+    return redirect('/login')
