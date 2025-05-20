@@ -68,7 +68,7 @@ def ensure_data_tables():
         CREATE TABLE IF NOT EXISTS comments (
             id SERIAL PRIMARY KEY,
             company_id INTEGER,
-            user TEXT,
+            "user" TEXT,
             comment TEXT
         );
     """)
