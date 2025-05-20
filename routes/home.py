@@ -1,5 +1,5 @@
 from flask import redirect
-from server import app
+from flask import current_app as app
 
 @app.route('/')
 def index():
