@@ -1,82 +1,97 @@
-import sqlite3
 import os
+import psycopg2
+from psycopg2.extras import RealDictCursor
+from dotenv import load_dotenv
 import bcrypt
- 
-DB_DIR = os.path.join(os.path.dirname(__file__), '..', 'db')
-USERS_DB = os.path.join(DB_DIR, 'users.db')
-DATA_DB = os.path.join(DB_DIR, 'data.db')
- 
-# Hash seguro con bcrypt
+
+# Cargar las variables de entorno (funciona en local si usas .env)
+load_dotenv()
+
+# 🔗 Conexión general
+def get_connection():
+    return psycopg2.connect(os.getenv("DATABASE_URL"), cursor_factory=RealDictCursor)
+
+# ✅ Hash seguro con bcrypt
 def hash_password(password):
     salt = bcrypt.gensalt()
     return bcrypt.hashpw(password.encode(), salt).decode('utf-8')
- 
+
 def verify_password(stored_hash, password):
     return bcrypt.checkpw(password.encode(), stored_hash.encode())
- 
-def ensure_users_db():
-    ensure_data_db()
- 
-    if not os.path.exists(USERS_DB):
-        os.makedirs(DB_DIR, exist_ok=True)
-        conn = sqlite3.connect(USERS_DB)
-        c = conn.cursor()
-        c.execute("""CREATE TABLE users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT UNIQUE,
-            password TEXT,
+
+# ✅ Crear tabla users si no existe
+def ensure_users_table():
+    conn = get_connection()
+    cur = conn.cursor()
+
+    # Crear tabla si no existe
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id SERIAL PRIMARY KEY,
+            username TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL,
             role TEXT,
             company_id INTEGER
-        )""")
+        );
+    """)
+
+    # Insertar datos solo si está vacía
+    cur.execute("SELECT COUNT(*) FROM users;")
+    if cur.fetchone()['count'] == 0:
         users = [
             ('alice', hash_password('password1'), 'user', None),
             ('bob', hash_password('password2'), 'owner', 1),
             ('admin', hash_password('admin123'), 'admin', None)
         ]
-        c.executemany("INSERT INTO users (username, password, role, company_id) VALUES (?, ?, ?, ?)", users)
-        conn.commit()
-        conn.close()
- 
-def ensure_data_db():
-    if not os.path.exists(DATA_DB):
-        os.makedirs(DB_DIR, exist_ok=True)
-        conn = sqlite3.connect(DATA_DB)
-        c = conn.cursor()
-        c.execute("""CREATE TABLE companies (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+        for u in users:
+            cur.execute("INSERT INTO users (username, password, role, company_id) VALUES (%s, %s, %s, %s)", u)
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+# ✅ Crear tabla companies y comments si no existen
+def ensure_data_tables():
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS companies (
+            id SERIAL PRIMARY KEY,
             name TEXT,
             description TEXT,
             owner TEXT
-        )""")
-        c.execute("""CREATE TABLE comments (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+        );
+    """)
+
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS comments (
+            id SERIAL PRIMARY KEY,
             company_id INTEGER,
             user TEXT,
             comment TEXT
-        )""")
- 
-        # Empresas y comentarios
-        c.execute("INSERT INTO companies (name, description, owner) VALUES ('Insegura Corp', 'A very insecure company.', 'bob')")
-        c.execute("INSERT INTO comments (company_id, user, comment) VALUES (1, 'alice', 'This company is extremely insecure!')")
-        c.execute("INSERT INTO comments (company_id, user, comment) VALUES (1, 'admin', 'I agree, there are many vulnerabilities here.')")
-        c.execute("INSERT INTO comments (company_id, user, comment) VALUES (1, 'bob', 'We need to improve security immediately.')")
- 
-        c.execute("INSERT INTO companies (name, description, owner) VALUES ('Flameera', 'A cutting-edge company with top security measures.', 'bob')")
-        c.execute("INSERT INTO comments (company_id, user, comment) VALUES (2, 'alice', 'Flameera is doing great with security!')")
-        c.execute("INSERT INTO comments (company_id, user, comment) VALUES (2, 'admin', 'Top-tier measures! I recommend this company for security.')")
-        c.execute("INSERT INTO comments (company_id, user, comment) VALUES (2, 'bob', 'Our security is state-of-the-art! Flameera is the future.')")
- 
-        conn.commit()
-        conn.close()
- 
-def get_users_connection():
-    ensure_users_db()
-    conn = sqlite3.connect(USERS_DB)
-    conn.row_factory = sqlite3.Row
-    return conn
- 
-def get_data_connection():
-    ensure_data_db()
-    conn = sqlite3.connect(DATA_DB)
-    conn.row_factory = sqlite3.Row
-    return conn
+        );
+    """)
+
+    # Verificar si hay datos ya insertados
+    cur.execute("SELECT COUNT(*) FROM companies;")
+    if cur.fetchone()['count'] == 0:
+        # Insertar empresas
+        cur.execute("INSERT INTO companies (name, description, owner) VALUES ('Insegura Corp', 'A very insecure company.', 'bob') RETURNING id;")
+        c1_id = cur.fetchone()['id']
+
+        cur.execute("INSERT INTO companies (name, description, owner) VALUES ('Flameera', 'Top security company.', 'bob') RETURNING id;")
+        c2_id = cur.fetchone()['id']
+
+        # Comentarios
+        cur.execute("INSERT INTO comments (company_id, user, comment) VALUES (%s, %s, %s)", (c1_id, 'alice', 'This company is extremely insecure!'))
+        cur.execute("INSERT INTO comments (company_id, user, comment) VALUES (%s, %s, %s)", (c1_id, 'admin', 'Agreed, very vulnerable.'))
+        cur.execute("INSERT INTO comments (company_id, user, comment) VALUES (%s, %s, %s)", (c1_id, 'bob', 'Improvement needed.'))
+
+        cur.execute("INSERT INTO comments (company_id, user, comment) VALUES (%s, %s, %s)", (c2_id, 'alice', 'Excellent security.'))
+        cur.execute("INSERT INTO comments (company_id, user, comment) VALUES (%s, %s, %s)", (c2_id, 'admin', 'Highly recommended.'))
+        cur.execute("INSERT INTO comments (company_id, user, comment) VALUES (%s, %s, %s)", (c2_id, 'bob', 'Flameera is the future.'))
+
+    conn.commit()
+    cur.close()
+    conn.close()
