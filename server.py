@@ -12,7 +12,7 @@ def create_app():
     Create and configure the Flask application.
     """
     # Load environment variables
-    load_dotenv(
+    load_dotenv()
 
     # Initialize the Flask app
     app = Flask(__name__)
