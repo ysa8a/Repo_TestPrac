@@ -33,6 +33,6 @@ with app.app_context():
     ensure_data_tables()
 
 # Registrar Blueprints
-app.register_blueprint(auth_bp)
 app.register_blueprint(home_bp)
+app.register_blueprint(auth_bp)
 app.register_blueprint(companies_bp)
