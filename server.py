@@ -6,6 +6,7 @@ from flask_wtf import CSRFProtect
 from db import ensure_users_table, ensure_data_tables
 from routes.home import home_bp
 from routes.auth import auth_bp
+from routes.companies import companies_bp
 
 # Cargar variables de entorno
 load_dotenv()
@@ -34,3 +35,4 @@ with app.app_context():
 # Registrar Blueprints
 app.register_blueprint(auth_bp)
 app.register_blueprint(home_bp)
+app.register_blueprint(companies_bp)
