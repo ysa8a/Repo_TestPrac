@@ -1,5 +1,6 @@
 from flask import request, redirect, render_template, session, Blueprint
 from db import get_connection, verify_password
+from flask_wtf.csrf import generate_csrf
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -29,4 +30,4 @@ def login():
         else:
             error = "Invalid username or password"
 
-    return render_template('auth/login.html', error=error)
+    return render_template('auth/login.html', error=error, csrf_token=generate_csrf())
