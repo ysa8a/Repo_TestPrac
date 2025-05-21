@@ -1,5 +1,5 @@
 from flask import request, redirect, render_template, session, Blueprint
-from db import get_data_connection
+from db import get_connection
 
 companies_bp = Blueprint('companies', __name__)
 
@@ -11,7 +11,7 @@ def index():
 def list_companies():
     if 'username' not in session:
         return redirect('/login')
-    conn = get_data_connection()
+    conn = conn = get_connection()
     companies = conn.execute("SELECT * FROM companies").fetchall()
 
     companies_list = []
@@ -27,7 +27,7 @@ def list_companies():
 def company_detail(company_id):
     if 'username' not in session:
         return redirect('/login')
-    conn = get_data_connection()
+    conn = get_connection()
     company = conn.execute("SELECT * FROM companies WHERE id = %s", (company_id,)).fetchone()
     comments = conn.execute("SELECT * FROM comments WHERE company_id = %s", (company_id,)).fetchall()
     if request.method == 'POST':
@@ -50,7 +50,7 @@ def register_company():
         company_name = request.form['company_name']
         description = request.form['description']
         owner = session.get('username')
-        conn = get_data_connection()
+        conn = get_connection()
         conn.execute("INSERT INTO companies (name, description, owner) VALUES (%s, %s, %s)", (company_name, description, owner))
         conn.commit()
         conn.close()
@@ -61,7 +61,7 @@ def register_company():
 def edit_company(company_id):
     if 'username' not in session:
         return redirect('/')
-    conn = get_data_connection()
+    conn = get_connection()
     company = conn.execute("SELECT * FROM companies WHERE id = %s", (company_id,)).fetchone()
     if not company:
         conn.close()
