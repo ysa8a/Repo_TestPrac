@@ -31,3 +31,8 @@ def login():
             error = "Invalid username or password"
 
     return render_template('auth/login.html', error=error, csrf_token=generate_csrf())
+
+@auth_bp.route('/logout')
+def logout():
+    session.clear()
+    return redirect('/login')
