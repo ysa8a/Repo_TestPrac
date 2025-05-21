@@ -1,5 +1,5 @@
 from flask import request, redirect, render_template, session, Blueprint
-from db import get_users_connection, get_data_connection, hash_password
+from db import get_connection, hash_password
 from flask_wtf.csrf import generate_csrf
 
 users_admin_bp = Blueprint('users_admin', __name__)
@@ -9,19 +9,17 @@ def admin_users():
     if session.get('role') != 'admin':
         return "Access denied", 403
 
-    conn_u = get_users_connection()
-    cur_u = conn_u.cursor()
-    cur_u.execute("SELECT * FROM users")
-    users = cur_u.fetchall()
-    cur_u.close()
-    conn_u.close()
+    conn = get_connection()
+    cur = conn.cursor()
 
-    conn_d = get_data_connection()
-    cur_d = conn_d.cursor()
-    cur_d.execute("SELECT * FROM companies")
-    companies = cur_d.fetchall()
-    cur_d.close()
-    conn_d.close()
+    cur.execute("SELECT * FROM users")
+    users = cur.fetchall()
+
+    cur.execute("SELECT * FROM companies")
+    companies = cur.fetchall()
+
+    cur.close()
+    conn.close()
 
     csrf_token = generate_csrf()
     return render_template("admin/admin_users.html", users=users, companies=companies, csrf_token=csrf_token)
@@ -36,7 +34,7 @@ def add_user():
     role = request.form['role']
     company_id = request.form.get('company_id') if role == 'owner' else None
 
-    conn = get_users_connection()
+    conn = get_connection()
     cur = conn.cursor()
 
     if company_id:
@@ -64,7 +62,7 @@ def edit_user():
     new_role = request.form['role']
     company_id = request.form.get('company_id') if new_role == 'owner' else None
 
-    conn = get_users_connection()
+    conn = get_connection()
     cur = conn.cursor()
 
     if company_id:
@@ -83,7 +81,7 @@ def delete_user():
         return "Access denied", 403
 
     username = request.form['username']
-    conn = get_users_connection()
+    conn = get_connection()
     cur = conn.cursor()
     cur.execute("DELETE FROM users WHERE username = %s", (username,))
     conn.commit()
