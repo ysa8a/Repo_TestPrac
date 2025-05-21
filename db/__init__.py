@@ -68,7 +68,7 @@ def ensure_data_tables():
         CREATE TABLE IF NOT EXISTS comments (
             id SERIAL PRIMARY KEY,
             company_id INTEGER,
-            "user" TEXT,
+            username TEXT,
             comment TEXT
         );
     """)
@@ -84,13 +84,13 @@ def ensure_data_tables():
         c2_id = cur.fetchone()['id']
 
         # Comentarios
-        cur.execute("INSERT INTO comments (company_id, user, comment) VALUES (%s, %s, %s)", (c1_id, 'alice', 'This company is extremely insecure!'))
-        cur.execute("INSERT INTO comments (company_id, user, comment) VALUES (%s, %s, %s)", (c1_id, 'admin', 'Agreed, very vulnerable.'))
-        cur.execute("INSERT INTO comments (company_id, user, comment) VALUES (%s, %s, %s)", (c1_id, 'bob', 'Improvement needed.'))
+        cur.execute("INSERT INTO comments (company_id, username, comment) VALUES (%s, %s, %s)", (c1_id, 'alice', 'This company is extremely insecure!'))
+        cur.execute("INSERT INTO comments (company_id, username, comment) VALUES (%s, %s, %s)", (c1_id, 'admin', 'Agreed, very vulnerable.'))
+        cur.execute("INSERT INTO comments (company_id, username, comment) VALUES (%s, %s, %s)", (c1_id, 'bob', 'Improvement needed.'))
 
-        cur.execute("INSERT INTO comments (company_id, user, comment) VALUES (%s, %s, %s)", (c2_id, 'alice', 'Excellent security.'))
-        cur.execute("INSERT INTO comments (company_id, user, comment) VALUES (%s, %s, %s)", (c2_id, 'admin', 'Highly recommended.'))
-        cur.execute("INSERT INTO comments (company_id, user, comment) VALUES (%s, %s, %s)", (c2_id, 'bob', 'Flameera is the future.'))
+        cur.execute("INSERT INTO comments (company_id, username, comment) VALUES (%s, %s, %s)", (c2_id, 'alice', 'Excellent security.'))
+        cur.execute("INSERT INTO comments (company_id, username, comment) VALUES (%s, %s, %s)", (c2_id, 'admin', 'Highly recommended.'))
+        cur.execute("INSERT INTO comments (company_id, username, comment) VALUES (%s, %s, %s)", (c2_id, 'bob', 'Flameera is the future.'))
 
     conn.commit()
     cur.close()
