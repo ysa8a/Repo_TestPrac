@@ -1,12 +1,9 @@
-from pathlib import Path
-
-# Contenido del archivo deploy.yml para GitHub Actions
-deploy_yml_content = """name: Deploy to Render
+name: Deploy to Render
 
 on:
   push:
     branches:
-      - Vulnerabilidad  # Cambia si usas otra rama principal
+      - Vulnerabilidad  # Asegúrate de que coincide con el nombre exacto de tu rama
 
 jobs:
   deploy:
@@ -15,8 +12,3 @@ jobs:
       - name: Trigger Render Deploy Hook
         run: |
           curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
-"""
-
-# Guardar el archivo
-workflow_path = Path("/mnt/data/deploy.yml")
-workflow_path.write_text(deploy_yml_content, encoding="utf-8")
