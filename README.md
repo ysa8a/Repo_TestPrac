@@ -17,13 +17,51 @@ This system simulates a realistic business environment and includes features suc
 
 ---
 
-## 🧱 Technologies Used
 
-- **Python 3** with **Flask**
-- **SQLite** for database
-- **Bootstrap 5** for responsive UI
-- **Jinja2** for templating
-- **JavaScript** for interactivity
+## 🔍 1. Modelado de Amenazas (Resumen STRIDE)
+
+El análisis STRIDE identificó vulnerabilidades clave como inyección SQL, XSS y control de sesiones. Todas fueron corregidas excepto la falta de una página genérica para errores 500.
+
+> Consulta la tabla completa en el informe final o sección 3.
+
+
+## ⚙️ 2. Justificación de Herramientas
+
+| Herramienta       | Uso principal                                                             |
+|-------------------|---------------------------------------------------------------------------|
+| **Flask**         | Backend ligero, modular y extensible con Blueprints                      |
+| **Veracode**      | Análisis SAST/SCA en el pipeline para detección de vulnerabilidades      |
+| **GitHub Actions**| Automatización del análisis y despliegue                                |
+| **Render**        | Entorno de despliegue seguro y accesible públicamente con HTTPS          |
+| **Flask-WTF**     | Protección CSRF y validación segura de formularios                      |
+| **dotenv**        | Gestión segura de credenciales y configuraciones                        |
+
+---
+## 🧪 3. Hallazgos de Seguridad
+
+| CWE     | Descripción                                      | Estado     |
+|---------|--------------------------------------------------|------------|
+| CWE-89  | Inyección SQL en formularios                    | ✅ Corregido|
+| CWE-352 | Falta de CSRF en formularios críticos           | ✅ Corregido|
+| CWE-614 | Cookies inseguras en sesión                     | ✅ Corregido|
+| CWE-200 | Falta de manejo de errores 500 personalizado    | ❌ No corregido|
+
+> Ver tabla completa de 27 hallazgos en la documentación final.
+
+## 🧱 4. Arquitectura del Proyecto
+
+![Arquitectura](./docs/devsecops_architecture.png)
+
+- Frontend: HTML con Bootstrap 5
+- Backend: Flask + Blueprints
+- BD: PostgreSQL (Render)
+- CI/CD: GitHub Actions + Veracode + Deploy automático
+
+---
+
+## 💬 5. Reflexión Final del Equipo
+
+> “DevSecOps permitió integrar seguridad desde el diseño hasta el despliegue. Aprendimos a automatizar el análisis, aplicar controles desde el código y entender la importancia de un entorno productivo real como Render. Seguridad, desarrollo y operaciones deben ir de la mano desde el principio.”
 
 ---
 
@@ -105,4 +143,6 @@ python main.py
 | `admin`  | admin123   | admin  | Full access                |
 
 ---
+## 📄 Licencia
 
+Este proyecto se publica con fines educativos bajo licencia MIT.
