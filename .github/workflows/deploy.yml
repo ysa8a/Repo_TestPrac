@@ -1,7 +1,7 @@
-name: Deploy to Render
+name: Deploy to Render and Scan with Veracode
 
 on: [push, pull_request]
-  
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -12,7 +12,6 @@ jobs:
 
   veracode_scan:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout código
         uses: actions/checkout@v3
@@ -27,7 +26,13 @@ jobs:
           VERACODE_API_KEY_ID: ${{ secrets.VERACODE_API_ID }}
           VERACODE_API_KEY_SECRET: ${{ secrets.VERACODE_API_KEY }}
         run: |
-          ./veracode scan --source . --type directory --format json --output sast-result.json
+          ./veracode scan \
+            --source . \
+            --type directory \
+            --format json \
+            --output sast-result.json \
+            --asset-id b6c08ffb71eef278810766eabe1edabc
+
           echo "📄 Resultado SAST:"
           cat sast-result.json
           if jq -e '.findings[] | select(.severity=="CRITICAL")' sast-result.json; then
@@ -43,7 +48,13 @@ jobs:
           VERACODE_API_KEY_SECRET: ${{ secrets.VERACODE_API_KEY }}
         run: |
           ./veracode sbom --source . --format cyclonedx-json --output sbom.json
-          ./veracode scan --type sca --source sbom.json --format json --output sca-result.json
+          ./veracode scan \
+            --type sca \
+            --source sbom.json \
+            --format json \
+            --output sca-result.json \
+            --asset-id b6c08ffb71eef278810766eabe1edabc
+
           echo "📄 Resultado SCA:"
           cat sca-result.json
           if jq -e '.findings[] | select(.severity=="CRITICAL")' sca-result.json; then
@@ -52,3 +63,4 @@ jobs:
           else
             echo "✅ SCA limpio de vulnerabilidades críticas"
           fi
+
