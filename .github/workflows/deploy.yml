@@ -1,10 +1,7 @@
 name: Deploy to Render
 
-on:
-  push:
-    branches:
-      - Vulnerabilidad  # Asegúrate de que coincide con el nombre exacto de tu rama
-
+on: [push, pull_request]
+  
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -12,3 +9,46 @@ jobs:
       - name: Trigger Render Deploy Hook
         run: |
           curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
+
+  veracode_scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v3
+
+      - name: Instalar Veracode CLI v2
+        run: |
+          curl -fsS https://tools.veracode.com/veracode-cli/install | sh
+          ./veracode version
+
+      - name: Ejecutar análisis SAST
+        env:
+          VERACODE_API_KEY_ID: ${{ secrets.VERACODE_API_ID }}
+          VERACODE_API_KEY_SECRET: ${{ secrets.VERACODE_API_KEY }}
+        run: |
+          ./veracode scan --source . --type directory --format json --output sast-result.json
+          echo "📄 Resultado SAST:"
+          cat sast-result.json
+          if jq -e '.findings[] | select(.severity=="CRITICAL")' sast-result.json; then
+            echo "❌ Vulnerabilidades CRÍTICAS detectadas en SAST"
+            exit 1
+          else
+            echo "✅ SAST limpio de vulnerabilidades críticas"
+          fi
+
+      - name: Ejecutar análisis SCA (dependencias)
+        env:
+          VERACODE_API_KEY_ID: ${{ secrets.VERACODE_API_ID }}
+          VERACODE_API_KEY_SECRET: ${{ secrets.VERACODE_API_KEY }}
+        run: |
+          ./veracode sbom --source . --format cyclonedx-json --output sbom.json
+          ./veracode scan --type sca --source sbom.json --format json --output sca-result.json
+          echo "📄 Resultado SCA:"
+          cat sca-result.json
+          if jq -e '.findings[] | select(.severity=="CRITICAL")' sca-result.json; then
+            echo "❌ Vulnerabilidades CRÍTICAS detectadas en SCA"
+            exit 1
+          else
+            echo "✅ SCA limpio de vulnerabilidades críticas"
+          fi
