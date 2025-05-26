@@ -40,7 +40,8 @@ jobs:
 
       - name: Upload scan summary
         if: always()
-        uses: actions/upload-artifact@7a367b352440b2f1e314b0921f8dc7de3323968b
+        uses: actions/upload-artifact@v4
         with:
           name: veracode-summary
           path: summary.txt
+
