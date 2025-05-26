@@ -2,7 +2,7 @@ name: Veracode Static Analysis
 
 on:
   push:
-    branches: [Vulnerabilidad]
+    branches: [vulnerabilidad]
 
 jobs:
   veracode_scan:
