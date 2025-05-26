@@ -9,12 +9,12 @@ name: Veracode Static Analysis Pipeline Scan
 
 on:
   push:
-    branches: [ "vulnerabilidad" ]
+    branches: [ "Vulnerabilidad" ]
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: [ "vulnerabilidad" ]
+    branches: [ "Vulnerabilidad" ]
   schedule:
-    - cron: '25 3 * * 0'
+    - cron: '25 3 * * 0,1,2,3,4'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 permissions:
