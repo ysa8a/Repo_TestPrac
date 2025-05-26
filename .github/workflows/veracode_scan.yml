@@ -19,7 +19,7 @@ jobs:
         uses: veracode/veracode-uploadandscan-action@0.2.7
 
         with:
-          appname: 'company-management-app_UNIE'
+          appname: 'company-management-app_Prueba'
           createprofile: true
           filepath: 'app.zip'
           version: '${{ github.run_id }}'
