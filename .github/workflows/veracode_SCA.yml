@@ -1,4 +1,4 @@
-name: Veracode Static Analysis Pipeline Scan1
+name: Veracode Static Analysis Pipeline Scan
 
 on:
   push:
@@ -40,7 +40,7 @@ jobs:
 
       - name: Upload scan summary
         if: always()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v2.3.1
         with:
           name: veracode-summary
           path: summary.txt
