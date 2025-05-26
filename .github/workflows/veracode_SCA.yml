@@ -30,6 +30,11 @@ jobs:
           fail_on_severity: "Very High, High"
           summary_output: true
           summary_output_file: summary.txt
+      - name: Verificar existencia de summary
+        run: |
+          ls -la
+          cat summary.txt || echo "summary.txt no fue generado"
+
           json_output: true
           json_output_file: results.json
           filtered_json_output_file: filtered_results.json
