@@ -35,7 +35,7 @@ jobs:
           filtered_json_output_file: filtered_results.json
           fail_build: true
           project_name: "Repo_TestPrac"
-          project_url: "https://github.com/ysa8a/Repo_TestPrac"
+          project_url: "https://github.com/ysa8a/Repo_TestPrac/tree/Vulnerabilidad"
           project_ref: ${{ github.ref }}
 
       - name: Upload scan summary
