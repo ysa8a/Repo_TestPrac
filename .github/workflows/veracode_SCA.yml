@@ -2,9 +2,9 @@ name: Veracode Static Analysis Pipeline Scan
 
 on:
   push:
-    branches: [ "vulnerabilidad" ]
+    branches: [ "Vulnerabilidad" ]
   pull_request:
-    branches: [ "vulnerabilidad" ]
+    branches: [ "Vulnerabilidad" ]
 
 permissions:
   contents: read
