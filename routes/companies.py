@@ -108,3 +108,6 @@ def edit_company(company_id):
     cur.close()
     conn.close()
     return render_template('companies/edit_company.html', company=company)
+
+
+
