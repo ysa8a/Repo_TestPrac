@@ -28,25 +28,18 @@ jobs:
           vkey: ${{ secrets.VERACODE_API_KEY }}
           file: veracode-scan-target.zip
           fail_on_severity: "Very High, High"
-          summary_output: true
-          summary_output_file: summary.txt
-      - name: Verificar existencia de summary
-        run: |
-          ls -la
-          cat summary.txt || echo "summary.txt no fue generado"
-
           json_output: true
           json_output_file: results.json
           filtered_json_output_file: filtered_results.json
           fail_build: true
           project_name: "Repo_TestPrac"
-          project_url: "https://github.com/ysa8a/Repo_TestPrac/tree/Vulnerabilidad"
+          project_url: "https://github.com/ysa8a/Repo_TestPrac"
           project_ref: ${{ github.ref }}
 
-      - name: Upload scan summary
+      - name: Subir resultados de Veracode
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: veracode-summary
-          path: summary.txt
+          name: veracode-results
+          path: filtered_results.json
 
