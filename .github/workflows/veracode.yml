@@ -25,19 +25,21 @@ jobs:
       security-events: write
       actions: read
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Package app into ZIP
+      - name: Zip application
         run: zip -r veracode-scan-target.zip ./ -x '*.git*'
 
-      - name: Download Veracode Pipeline Scan CLI
-        run: |
-          curl --silent --show-error --fail -O https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
-          unzip -o pipeline-scan-LATEST.zip
+      - name: Download Veracode Pipeline Scan
+        run: curl --silent --show-error --fail -O https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
 
-      - name: Set up Java
+      - name: Unzip Veracode Pipeline Scan
+        run: unzip -o pipeline-scan-LATEST.zip
+
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
           java-version: 8
@@ -48,18 +50,17 @@ jobs:
           java -jar pipeline-scan.jar \
             --veracode_api_id "${{ secrets.VERACODE_API_ID }}" \
             --veracode_api_key "${{ secrets.VERACODE_API_KEY }}" \
-            --file veracode-scan-target.zip \
             --fail_on_severity="Very High, High" \
-            --json_output_file results.json
+            --file veracode-scan-target.zip
         continue-on-error: true
 
       - name: Convert pipeline scan output to SARIF format
         id: convert
-        uses: veracode/veracode-pipeline-scan-results-to-sarif@v0.2.0
+        uses: veracode/veracode-pipeline-scan-results-to-sarif@v0.3.0  # ✅ Usa la última versión estable
         with:
           pipeline-results-json: results.json
 
-      - name: Upload SARIF file to GitHub
+      - name: Upload SARIF to GitHub
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: veracode-results.sarif
