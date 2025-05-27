@@ -48,8 +48,8 @@ jobs:
         id: pipeline-scan
         uses: veracode/Veracode-pipeline-scan-action@v1.0.18
         with:
-          vid: ${{ secrets.VID }}
-          vkey: ${{ secrets.VKEY }}
+          vid: ${{ secrets.VERACODE_API_ID }}
+          vkey: ${{ secrets.VERACODE_API_KEY }}
           file: "verademo.war"
           request_policy: "VeraDemo Policy"
           debug: 1
