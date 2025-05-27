@@ -36,24 +36,17 @@ jobs:
   veracode_fix:
     runs-on: ubuntu-latest
     needs: pipeline_scan
-    if: ${{ always() }}
     name: Veracode Fix
+    if: github.event.pull_request.number != null
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-  
+
       - name: Download scan results
         uses: actions/download-artifact@v4
         with:
           name: veracode-scan-results
-  
-      - name: Validate results.json
-        run: |
-          if [ ! -s results.json ]; then
-            echo "Error: results.json is empty or missing."
-            exit 1
-          fi
-  
+
       - name: Run Veracode Fix
         uses: veracode/veracode-fix@main
         with:
