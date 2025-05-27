@@ -24,7 +24,6 @@ jobs:
           vid: ${{ secrets.VERACODE_API_ID }}
           vkey: ${{ secrets.VERACODE_API_KEY }}
           file: verademo.zip
-          request_policy: "Default Policy"
           debug: 1
           fail_build: false
 
