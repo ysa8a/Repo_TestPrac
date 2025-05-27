@@ -55,13 +55,13 @@ jobs:
           fi
   
       - name: Run Veracode Fix
-        uses: veracode/veracode-fix@v1.0.5
+        uses: veracode/veracode-fix@main
         with:
           inputFile: results.json
           vid: ${{ secrets.VERACODE_API_ID }}
           vkey: ${{ secrets.VERACODE_API_KEY }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          source_base_path_1: "src/:src/"
+          source_base_path_1: "./:./"
           language: python
           prComment: true
           fixType: single
