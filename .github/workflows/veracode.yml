@@ -1,8 +1,5 @@
 name: Veracode Pipeline Scan & Fix
 
-on:
-  push:
-    branches: [ "Vulnerabilidad" ]
   pull_request:
     branches: [ "Vulnerabilidad" ]
 
