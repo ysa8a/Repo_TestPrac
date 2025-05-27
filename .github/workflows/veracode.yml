@@ -46,14 +46,16 @@ jobs:
         with:
           name: Veracode Pipeline-Scan Results
 
+      - name: List downloaded files
+        run: ls -R
+
       - name: Run Veracode Fix
         uses: veracode/veracode-fix@main
         with:
-          inputFile: results.json
+          inputFile: Veracode Pipeline-Scan Results/results.json
           vid: ${{ secrets.VERACODE_API_ID }}
           vkey: ${{ secrets.VERACODE_API_KEY }}
           source_base_path_1: "src/:src/"
           language: python
           prComment: true
           fixType: single
-
