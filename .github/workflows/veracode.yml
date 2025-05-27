@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Veracode Pipeline Scan
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Package source code
@@ -30,7 +30,7 @@ jobs:
       - name: Upload scan results
         uses: actions/upload-artifact@v4
         with:
-          name: Veracode Pipeline-Scan Results
+          name: veracode-scan-results
           path: results.json
 
   veracode_fix:
@@ -38,7 +38,7 @@ jobs:
     needs: pipeline_scan
     name: Veracode Fix
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Download scan results
@@ -49,10 +49,11 @@ jobs:
       - name: Run Veracode Fix
         uses: veracode/veracode-fix@main
         with:
-          inputFile: veracode-scan-results/results.json
+          inputFile: results.json
           vid: ${{ secrets.VERACODE_API_ID }}
           vkey: ${{ secrets.VERACODE_API_KEY }}
           source_base_path_1: "src/:src/"
           language: python
           prComment: true
           fixType: single
+
