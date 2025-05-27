@@ -1,7 +1,8 @@
 name: Veracode Pipeline Scan & Fix
+
 on:
   pull_request:
-    branches: [ "Vulnerabilidad" ]
+    branches: ["Vulnerabilidad"]
 
 jobs:
   pipeline_scan:
@@ -34,6 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: pipeline_scan
     name: Veracode Fix
+    if: github.event.pull_request.number != null
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
