@@ -52,7 +52,7 @@ jobs:
           inputFile: results.json
           vid: ${{ secrets.VERACODE_API_ID }}
           vkey: ${{ secrets.VERACODE_API_KEY }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           source_base_path_1: "src/:src/"
           language: python
           prComment: true
