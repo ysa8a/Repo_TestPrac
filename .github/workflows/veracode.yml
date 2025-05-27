@@ -44,15 +44,12 @@ jobs:
       - name: Download scan results
         uses: actions/download-artifact@v4
         with:
-          name: Veracode Pipeline-Scan Results
-
-      - name: List downloaded files
-        run: ls -R
+          name: veracode-scan-results
 
       - name: Run Veracode Fix
         uses: veracode/veracode-fix@main
         with:
-          inputFile: Veracode Pipeline-Scan Results/results.json
+          inputFile: veracode-scan-results/results.json
           vid: ${{ secrets.VERACODE_API_ID }}
           vkey: ${{ secrets.VERACODE_API_KEY }}
           source_base_path_1: "src/:src/"
