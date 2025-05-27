@@ -36,8 +36,8 @@ jobs:
   veracode_fix:
     runs-on: ubuntu-latest
     needs: pipeline_scan
+    if: ${{ always() }}  # Ejecuta el fix aunque el escaneo no haya fallado
     name: Veracode Fix
-    if: github.event.pull_request.number != null
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
