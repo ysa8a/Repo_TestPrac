@@ -10,7 +10,9 @@ def vulnerable_login():
     password = request.form.get('password')
 
     #  VULNERABLE: SQL concatenation sin parámetros seguros
-    query = f"SELECT * FROM users WHERE username = '{username}' AND password = '{password}'"
+    # query = f"SELECT * FROM users WHERE username = '{username}' AND password = '{password}'"
+    cursor.execute("SELECT * FROM users WHERE username = ? AND password = ?", (username, password))
+
 
     conn = sqlite3.connect('data.db')
     cursor = conn.cursor()
